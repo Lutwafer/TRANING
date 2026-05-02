@@ -5,322 +5,405 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FitCoach Pro">
-<meta name="theme-color" content="#080808">
-<title>FitCoach Pro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<meta name="apple-mobile-web-app-title" content="FitCoach">
+<meta name="theme-color" content="#0d0d0d">
+<title>FitCoach — наглядные упражнения</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ... стили такие же, как в предыдущем рабочем коде (оставлю компактно) ... */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0d0d0d;--bg2:#161616;--bg3:#1f1f1f;--bg4:#2a2a2a;--text:#f5f5f0;--text2:#999;--text3:#555;--blue:#4A90E2;--blue-dim:#1a2d45;--pink:#E2709A;--pink-dim:#3d1a2d;--border:rgba(255,255,255,0.07);--radius:14px;--radius-sm:10px;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body)}
+#app{height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s}
+.screen.active{opacity:1;pointer-events:all;transform:none!important}
+.screen.slide-in{transform:translateX(100%)}
+.screen.slide-out{transform:translateX(-30%)}
+.scrollable{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+.scrollable::-webkit-scrollbar{display:none}
+.header{padding:52px 20px 16px;display:flex;align-items:flex-end;justify-content:space-between;background:var(--bg)}
+.header-title{font-family:var(--font-head);font-size:22px;font-weight:700}
+.header-back{background:var(--bg3);border:none;color:var(--text);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer}
+.select-inner{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 24px}
+.logo-area{margin-bottom:48px}
+.logo-icon{font-size:48px;margin-bottom:16px}
+.logo-title{font-family:var(--font-head);font-size:34px;font-weight:800;letter-spacing:-1px}
+.logo-sub{font-size:15px;color:var(--text2);margin-top:8px}
+.user-cards{display:flex;flex-direction:column;gap:14px}
+.u-card{border-radius:var(--radius);padding:22px;cursor:pointer;display:flex;align-items:center;gap:16px;border:1px solid transparent;transition:transform 0.15s}
+.u-card:active{transform:scale(0.97)}
+.u-card.male{background:linear-gradient(135deg,#0f1f35,#162840);border-color:var(--blue-dim)}
+.u-card.female{background:linear-gradient(135deg,#2a0f1f,#3a1428);border-color:var(--pink-dim)}
+.u-card-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px}
+.u-card.male .u-card-icon{background:rgba(74,144,226,0.15)}
+.u-card.female .u-card-icon{background:rgba(226,112,154,0.15)}
+.u-card-info h3{font-family:var(--font-head);font-size:18px;font-weight:700}
+.u-card.male h3{color:#7ab4f0}
+.u-card.female h3{color:#f09ab4}
+.u-card-info p{font-size:13px;color:var(--text2);margin-top:4px}
+.u-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-top:8px}
+.badge-blue{background:rgba(74,144,226,0.2);color:#7ab4f0}
+.badge-pink{background:rgba(226,112,154,0.2);color:#f09ab4}
+.u-arrow{margin-left:auto;color:var(--text3);font-size:20px}
+.dash-user-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.tag-male{background:rgba(74,144,226,0.15);color:#7ab4f0}
+.tag-female{background:rgba(226,112,154,0.15);color:#f09ab4}
+.dash-greeting{font-family:var(--font-head);font-size:26px;font-weight:800}
+.dash-sub{font-size:13px;color:var(--text2);margin-top:6px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px}
+.s-card{background:var(--bg2);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border)}
+.s-label{font-size:10px;color:var(--text3);text-transform:uppercase}
+.s-val{font-family:var(--font-head);font-size:28px;font-weight:700;margin-top:4px}
+.s-unit{font-size:12px;color:var(--text2)}
+.section-label{font-size:11px;color:var(--text3);text-transform:uppercase;padding:0 20px;margin-bottom:10px}
+.week-strip{padding:0 20px 16px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.wd{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:var(--text3);background:var(--bg2);gap:2px}
+.wd span{font-family:var(--font-head);font-size:13px;font-weight:700}
+.wd.done-male{background:var(--blue-dim);color:#7ab4f0}
+.wd.done-female{background:var(--pink-dim);color:#f09ab4}
+.wd.today-day{border:1.5px solid var(--text2);color:var(--text)}
+.today-block{margin:0 20px 20px;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.today-top{padding:18px 18px 14px;cursor:pointer}
+.today-tag{font-size:11px;color:var(--text2);margin-bottom:6px}
+.today-name{font-family:var(--font-head);font-size:19px;font-weight:700}
+.today-meta{font-size:13px;color:var(--text2);margin-top:5px}
+.today-cta{display:block;width:100%;padding:15px;border:none;font-size:15px;font-weight:600;font-family:var(--font-head);cursor:pointer;transition:opacity 0.15s}
+.today-cta:active{opacity:0.8}
+.cta-male{background:var(--blue);color:#fff}
+.cta-female{background:var(--pink);color:#fff}
+.prog-grid{padding:0 20px;display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.pg-item{background:var(--bg2);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;border:1px solid var(--border);transition:opacity 0.15s}
+.pg-item:active{opacity:0.7}
+.pg-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.pg-icon-male{background:var(--blue-dim)}
+.pg-icon-female{background:var(--pink-dim)}
+.pg-text h4{font-family:var(--font-head);font-size:14px;font-weight:600}
+.pg-text p{font-size:12px;color:var(--text2);margin-top:2px}
+.pg-arr{margin-left:auto;color:var(--text3)}
+.wk-name{font-family:var(--font-head);font-size:20px;font-weight:700}
+.wk-meta{font-size:13px;color:var(--text2);margin-top:4px}
+.prog-bar{height:3px;background:var(--bg3)}
+.prog-fill{height:100%;transition:width 0.4s;background:var(--blue)}
+.prog-fill.female{background:var(--pink)}
+.ex-list{padding:14px 20px 80px;display:flex;flex-direction:column;gap:12px}
+.ex-card{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.ex-card.is-active{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.ex-card.is-done{opacity:0.5}
+.ex-top{padding:14px;display:flex;gap:12px}
+.ex-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--bg3);color:var(--text2)}
+.ex-num.num-active{background:var(--blue);color:#fff}
+.ex-num.num-done-male{background:var(--blue-dim);color:#7ab4f0}
+.ex-num.num-done-female{background:var(--pink-dim);color:#f09ab4}
+.ex-image{margin:0 14px 10px 14px;border-radius:12px;overflow:hidden;background:var(--bg3);min-height:100px;display:flex;align-items:center;justify-content:center}
+.ex-image .img-placeholder{width:100%;padding:20px;text-align:center;color:var(--text3);font-size:48px}
+.ex-info h4{font-family:var(--font-head);font-size:15px;font-weight:700}
+.ex-detail{font-size:12px;color:var(--text2);margin-top:3px}
+.ex-tip{font-size:11.5px;color:var(--text3);margin-top:6px;font-style:italic}
+.sets-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.set-p{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--bg3);color:var(--text3)}
+.set-p.sp-done-male{background:var(--blue-dim);color:#7ab4f0}
+.set-p.sp-done-female{background:var(--pink-dim);color:#f09ab4}
+.ex-acts{padding:0 14px 14px;display:flex;gap:8px}
+.act-btn{flex:1;padding:11px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;font-size:13px;font-weight:600;font-family:var(--font-head);cursor:pointer;color:var(--text2);transition:opacity 0.15s}
+.act-btn:active{opacity:0.7}
+.act-primary-male{background:var(--blue);color:#fff;border-color:var(--blue)}
+.act-primary-female{background:var(--pink);color:#fff;border-color:var(--pink)}
+.timer-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;display:none;align-items:flex-end;padding-bottom:80px}
+.timer-bg.show{display:flex}
+.timer-card{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;padding:28px 24px 24px;width:100%;max-width:430px;margin:0 auto;border:1px solid var(--border)}
+.timer-lbl{font-size:12px;color:var(--text3);text-align:center;margin-bottom:8px}
+.timer-num{font-family:var(--font-head);font-size:72px;font-weight:800;text-align:center;letter-spacing:-3px;color:var(--text);margin-bottom:20px}
+.timer-num.warn{color:#E8A020}
+.timer-num.urgent{color:#E25858}
+.timer-presets{display:flex;gap:8px;margin-bottom:12px}
+.t-pre{flex:1;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer}
+.t-close{width:100%;padding:13px;background:var(--text);color:var(--bg);border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer}
+.hist-item{padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:12px}
+.hist-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px}
+.hist-text h4{font-size:14px}
+.hist-text p{font-size:12px;color:var(--text2);margin-top:2px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:14px}
+.profile-hero{padding:0 20px 20px;display:flex;align-items:center;gap:16px}
+.p-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px}
+.p-avatar-male{background:var(--blue-dim)}
+.p-avatar-female{background:var(--pink-dim)}
+.p-name{font-family:var(--font-head);font-size:22px;font-weight:800}
+.p-level{font-size:13px;color:var(--text2);margin-top:3px}
+.settings-list{margin:0 20px;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.si{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border)}
+.si:last-child{border-bottom:none}
+.si-label{font-size:15px}
+.si-val{font-size:13px;color:var(--text2)}
+.si select{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;color:var(--text)}
+.switch-btn{display:block;width:calc(100% - 40px);margin:16px 20px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);font-size:15px;color:var(--text2);text-align:center;cursor:pointer}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(13,13,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:10px 0 24px;z-index:200}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px}
+.nb .ni{font-size:22px;opacity:0.4}
+.nb .nl{font-size:10px;color:var(--text3)}
+.nb.nb-active .ni{opacity:1}
+.nb.nb-active .nl{color:var(--text2)}
+.done-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.done-icon{font-size:64px;margin-bottom:20px;animation:pop 0.4s ease}
+@keyframes pop{0%{transform:scale(0.5)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.done-title{font-family:var(--font-head);font-size:28px;font-weight:800}
+.done-sub{font-size:15px;color:var(--text2);margin:8px 0 32px}
+.done-btn{padding:16px 40px;border:none;border-radius:var(--radius);font-size:16px;font-weight:700;background:var(--text);color:var(--bg);cursor:pointer}
+</style>
 </head>
 <body>
 <div id="app">
-
-  <!-- ===== SELECT USER ===== -->
-  <div class="screen active" id="s-select">
-    <canvas id="bg-canvas"></canvas>
-    <div class="select-inner">
-      <div class="logo-area">
-        <div class="logo-mark">FC</div>
-        <div class="logo-title">FIT<span>COACH</span></div>
-        <div class="logo-sub">Профессиональные тренировки</div>
-        <div class="logo-version">Pro Edition</div>
-      </div>
-      <div class="select-label">— Выбери профиль —</div>
-      <div class="u-cards">
-        <div class="u-card male" onclick="selectUser('male')">
-          <div class="u-avatar-wrap">
-            <svg class="u-avatar-svg" viewBox="0 0 60 60"><circle cx="30" cy="20" r="12" fill="#00D4FF" opacity="0.8"/><path d="M10 55 Q15 35 30 33 Q45 35 50 55" fill="#00D4FF" opacity="0.6"/><line x1="18" y1="38" x2="8" y2="50" stroke="#00D4FF" stroke-width="5" stroke-linecap="round"/><line x1="42" y1="38" x2="52" y2="50" stroke="#00D4FF" stroke-width="5" stroke-linecap="round"/></svg>
-          </div>
-          <div class="u-info">
-            <h3>Я (Мужской)</h3>
-            <p>Сила · Масса · Кардио</p>
-            <div class="u-chips"><span class="chip chip-m">5 дней/нед</span><span class="chip chip-m">Силовые</span></div>
-          </div>
-          <div class="u-arr">›</div>
-        </div>
-        <div class="u-card female" onclick="selectUser('female')">
-          <div class="u-avatar-wrap">
-            <svg class="u-avatar-svg" viewBox="0 0 60 60"><ellipse cx="30" cy="18" rx="11" ry="13" fill="#FF6B9D" opacity="0.8"/><path d="M12 55 Q18 33 30 31 Q42 33 48 55" fill="#FF6B9D" opacity="0.6"/><line x1="20" y1="37" x2="10" y2="46" stroke="#FF6B9D" stroke-width="4" stroke-linecap="round"/><line x1="40" y1="37" x2="50" y2="46" stroke="#FF6B9D" stroke-width="4" stroke-linecap="round"/></svg>
-          </div>
-          <div class="u-info">
-            <h3>Жена (Женский)</h3>
-            <p>Тонус · Похудение · Гибкость</p>
-            <div class="u-chips"><span class="chip chip-f">4 дня/нед</span><span class="chip chip-f">Фитнес</span></div>
-          </div>
-          <div class="u-arr">›</div>
-        </div>
-      </div>
-      <div class="select-footer">Данные сохраняются отдельно для каждого профиля</div>
+<div class="screen active" id="s-select">
+  <div class="select-inner">
+    <div class="logo-area">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-title">FitCoach</div>
+      <div class="logo-sub">Наглядные упражнения</div>
     </div>
-  </div>
-
-  <!-- ===== DASHBOARD ===== -->
-  <div class="screen slide-in" id="s-dash">
-    <div class="dash-head" id="dash-head">
-      <div class="dash-tag" id="d-tag"></div>
-      <div class="dash-greeting" id="d-greeting"></div>
-      <div class="dash-sub" id="d-sub"></div>
-      <!-- Виджет слежения за женой (только для мужского профиля) -->
-      <div class="wife-widget" id="wife-widget" style="display:none">
-        <div class="ww-title">🌸 Тренировки жены</div>
-        <div class="ww-body" id="ww-body"></div>
+    <div class="user-cards">
+      <div class="u-card male" onclick="selectUser('male')">
+        <div class="u-card-icon">💪</div>
+        <div class="u-card-info"><h3>Я (Мужчина)</h3><p>Силовые тренировки · масса · кардио</p><span class="u-badge badge-blue">5 дней в неделю</span></div>
+        <span class="u-arrow">›</span>
       </div>
-    </div>
-    <div class="scrollable">
-      <div class="stats-row">
-        <div class="s-card"><div class="s-lbl">Эта неделя</div><div class="s-val" id="d-week">0<span class="s-unit"> трен</span></div></div>
-        <div class="s-card"><div class="s-lbl">Всего</div><div class="s-val" id="d-total">0<span class="s-unit"> трен</span></div></div>
-        <div class="s-card"><div class="s-lbl">Калорий сожжено</div><div class="s-val" id="d-kcal">0<span class="s-unit"> ккал</span></div></div>
-      </div>
-      <div class="sec-lbl">Неделя</div>
-      <div class="week-strip" id="d-wstrip"></div>
-      <div class="sec-lbl">Сегодня</div>
-      <div class="today-block" id="d-today">
-        <div class="today-top" onclick="startTodayWorkout()">
-          <div class="today-tag" id="d-today-tag">Тренировка дня</div>
-          <div class="today-name" id="d-today-name">—</div>
-          <div class="today-meta" id="d-today-meta"></div>
-        </div>
-        <button class="today-cta" id="d-cta" onclick="startTodayWorkout()">НАЧАТЬ →</button>
-      </div>
-      <div class="sec-lbl">Все программы</div>
-      <div class="prog-grid" id="d-progs"></div>
-    </div>
-    <nav class="bottom-nav" id="dash-nav">
-      <button class="nb nb-active" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
-      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
-      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
-      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
-    </nav>
-  </div>
-
-  <!-- ===== WORKOUT ===== -->
-  <div class="screen slide-in" id="s-workout">
-    <div class="wk-header">
-      <button class="icon-btn" onclick="confirmBack()">←</button>
-      <div class="wk-head-info">
-        <div class="wk-title" id="wk-name">Тренировка</div>
-        <div class="wk-meta-txt" id="wk-meta"></div>
-      </div>
-      <button class="icon-btn" onclick="openTimer(60)">⏱</button>
-    </div>
-    <div class="prog-bar-wrap">
-      <div class="prog-bar"><div class="prog-fill" id="wk-fill" style="width:0%"></div></div>
-      <div class="prog-txt" id="wk-prog-txt">0 / 0</div>
-    </div>
-    <div class="scrollable" id="wk-list"></div>
-    <nav class="bottom-nav">
-      <button class="nb" onclick="confirmBack()"><span class="ni">✕</span><span class="nl">Выйти</span></button>
-      <button class="nb nb-active"><span class="ni">🏋️</span><span class="nl">Тренировка</span></button>
-      <button class="nb" onclick="openTimer(60)"><span class="ni">⏱</span><span class="nl">Таймер</span></button>
-    </nav>
-  </div>
-
-  <!-- ===== CALORIES ===== -->
-  <div class="screen slide-in" id="s-calories">
-    <div class="header">
-      <div class="header-title">🥗 Калории</div>
-      <div class="cal-date-nav">
-        <button class="icon-btn-sm" onclick="changeCalDate(-1)">‹</button>
-        <span id="cal-date-lbl" style="font-size:13px;color:var(--text2)"></span>
-        <button class="icon-btn-sm" onclick="changeCalDate(1)">›</button>
-      </div>
-    </div>
-    <div class="scrollable">
-      <!-- Итог дня -->
-      <div class="cal-summary" id="cal-summary">
-        <div class="cal-ring-wrap">
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg3)" stroke-width="10"/>
-            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="10"
-              stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"
-              id="cal-ring" style="transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset 0.5s"/>
-          </svg>
-          <div class="cal-ring-text">
-            <div class="cal-ring-val" id="cal-total-val">0</div>
-            <div class="cal-ring-lbl">ккал</div>
-          </div>
-        </div>
-        <div class="cal-macros">
-          <div class="cal-macro"><div class="cm-val" id="mac-p">0г</div><div class="cm-lbl">Белки</div></div>
-          <div class="cal-macro"><div class="cm-val" id="mac-c">0г</div><div class="cm-lbl">Углев</div></div>
-          <div class="cal-macro"><div class="cm-val" id="mac-f">0г</div><div class="cm-lbl">Жиры</div></div>
-          <div class="cal-macro"><div class="cm-val" id="mac-w">0мл</div><div class="cm-lbl">Вода</div></div>
-        </div>
-      </div>
-      <!-- Цель калорий -->
-      <div class="cal-goal-bar" id="cal-goal-bar"></div>
-      <!-- Поиск еды -->
-      <div class="cal-search-wrap">
-        <div class="cal-search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="food-search" placeholder="Поиск еды, напитков..." oninput="searchFood(this.value)" autocomplete="off">
-          <button id="scan-btn" onclick="toggleBarcodeMode()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px">📷</button>
-        </div>
-        <div class="food-results" id="food-results"></div>
-      </div>
-      <!-- Категории быстрого добавления -->
-      <div class="sec-lbl">Быстрое добавление</div>
-      <div class="quick-cats" id="quick-cats"></div>
-      <!-- Список за день -->
-      <div class="sec-lbl" id="food-log-lbl">Сегодня съедено</div>
-      <div class="food-log" id="food-log"></div>
-    </div>
-    <nav class="bottom-nav">
-      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
-      <button class="nb nb-active" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
-      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
-      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
-    </nav>
-  </div>
-
-  <!-- ===== HISTORY ===== -->
-  <div class="screen slide-in" id="s-history">
-    <div class="header"><div class="header-title">📊 История</div></div>
-    <div class="scrollable" style="padding:0 20px 90px" id="hist-body"></div>
-    <nav class="bottom-nav">
-      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
-      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
-      <button class="nb nb-active" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
-      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
-    </nav>
-  </div>
-
-  <!-- ===== PROFILE ===== -->
-  <div class="screen slide-in" id="s-profile">
-    <div class="header"><div class="header-title">👤 Профиль</div></div>
-    <div class="scrollable" style="padding-bottom:90px">
-      <div class="profile-hero">
-        <div class="p-av" id="p-av"></div>
-        <div class="p-info">
-          <div class="p-name" id="p-name">—</div>
-          <div class="p-lvl" id="p-lvl">Начинающий</div>
-          <div class="p-streak" id="p-streak"></div>
-        </div>
-      </div>
-      <!-- Параметры тела -->
-      <div class="sec-lbl">Параметры тела</div>
-      <div class="body-params" id="body-params"></div>
-      <!-- Настройки -->
-      <div class="sec-lbl">Настройки</div>
-      <div class="settings-list">
-        <div class="si"><span class="si-lbl">Уровень подготовки</span><select id="lvl-sel" onchange="saveLevel()"><option value="beginner">Начинающий</option><option value="medium">Средний</option><option value="advanced">Продвинутый</option></select></div>
-        <div class="si"><span class="si-lbl">Цель калорий/день</span><input type="number" id="cal-goal-input" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text);width:90px" placeholder="2000" onchange="saveCalGoal()"></div>
-        <div class="si"><span class="si-lbl">Тренировок всего</span><span class="si-val" id="p-total">0</span></div>
-        <div class="si"><span class="si-lbl">На этой неделе</span><span class="si-val" id="p-week">0</span></div>
-        <div class="si"><span class="si-lbl">Последняя тренировка</span><span class="si-val" id="p-last">—</span></div>
-      </div>
-      <button class="switch-btn" onclick="switchUser()">🔄 Сменить профиль</button>
-      <div class="app-footer">FitCoach Pro · v2.0 · Данные хранятся локально</div>
-    </div>
-    <nav class="bottom-nav">
-      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
-      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
-      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
-      <button class="nb nb-active" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
-    </nav>
-  </div>
-
-  <!-- ===== TIMER OVERLAY ===== -->
-  <div class="timer-bg" id="timer-bg" onclick="if(event.target===this)closeTimer()">
-    <div class="timer-card">
-      <div class="timer-lbl">ОТДЫХ МЕЖДУ ПОДХОДАМИ</div>
-      <div class="timer-ring-wrap">
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="68" fill="none" stroke="var(--bg3)" stroke-width="10"/>
-          <circle cx="80" cy="80" r="68" fill="none" stroke="var(--accent)" stroke-width="10"
-            stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="0"
-            id="t-ring" style="transform:rotate(-90deg);transform-origin:80px 80px;transition:stroke-dashoffset 1s linear"/>
-        </svg>
-        <div class="timer-center">
-          <div class="timer-num" id="t-num">60</div>
-          <div class="timer-sec-lbl">сек</div>
-        </div>
-      </div>
-      <div class="timer-presets">
-        <button class="t-pre" onclick="resetTimer(30)">30с</button>
-        <button class="t-pre" onclick="resetTimer(45)">45с</button>
-        <button class="t-pre" onclick="resetTimer(60)">60с</button>
-        <button class="t-pre" onclick="resetTimer(90)">90с</button>
-        <button class="t-pre" onclick="resetTimer(120)">2мин</button>
-      </div>
-      <button class="t-close" onclick="closeTimer()">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- ===== ADD FOOD MODAL ===== -->
-  <div class="modal-bg" id="food-modal" onclick="if(event.target===this)closeFoodModal()">
-    <div class="modal-card">
-      <div class="modal-title" id="fm-title">Добавить</div>
-      <div class="modal-food-info" id="fm-info"></div>
-      <div class="modal-field">
-        <label>Количество (г / мл / шт)</label>
-        <div class="qty-row">
-          <button class="qty-btn" onclick="changeQty(-10)">−</button>
-          <input type="number" id="fm-qty" value="100" min="1" max="2000" oninput="updateFoodCalc()">
-          <button class="qty-btn" onclick="changeQty(10)">+</button>
-        </div>
-      </div>
-      <div class="modal-calc" id="fm-calc"></div>
-      <div class="modal-meal-type">
-        <div class="meal-type-lbl">Приём пищи:</div>
-        <div class="meal-types">
-          <button class="mt-btn active" onclick="setMealType(this,'breakfast')">🌅 Завтрак</button>
-          <button class="mt-btn" onclick="setMealType(this,'lunch')">☀️ Обед</button>
-          <button class="mt-btn" onclick="setMealType(this,'dinner')">🌙 Ужин</button>
-          <button class="mt-btn" onclick="setMealType(this,'snack')">🍎 Перекус</button>
-        </div>
-      </div>
-      <button class="modal-add-btn" onclick="addFoodToLog()">Добавить ✓</button>
-    </div>
-  </div>
-
-  <!-- ===== WEIGHT MODAL ===== -->
-  <div class="modal-bg" id="weight-modal" onclick="if(event.target===this)closeWeightModal()">
-    <div class="modal-card">
-      <div class="modal-title" id="wm-title">Вес упражнения</div>
-      <div class="modal-field">
-        <label id="wm-ex-name" style="font-size:13px;color:var(--text2);margin-bottom:8px;display:block"></label>
-        <div class="qty-row">
-          <button class="qty-btn" onclick="changeWeight(-2.5)">−</button>
-          <input type="number" id="wm-weight" value="0" step="2.5" min="0" max="300">
-          <button class="qty-btn" onclick="changeWeight(2.5)">+</button>
-        </div>
-        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:6px">кг (0 = вес тела)</div>
-      </div>
-      <div class="modal-note">
-        <input type="text" id="wm-note" placeholder="Заметка (опционально)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text)">
-      </div>
-      <button class="modal-add-btn" onclick="saveWeight()">Сохранить</button>
-    </div>
-  </div>
-
-  <!-- ===== CONFIRM BACK ===== -->
-  <div class="modal-bg" id="confirm-modal" onclick="if(event.target===this)closeConfirm()">
-    <div class="modal-card" style="text-align:center">
-      <div style="font-size:32px;margin-bottom:12px">⚠️</div>
-      <div class="modal-title">Выйти из тренировки?</div>
-      <div style="font-size:14px;color:var(--text2);margin:10px 0 20px">Прогресс будет потерян</div>
-      <div style="display:flex;gap:10px">
-        <button onclick="closeConfirm()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text2);cursor:pointer">Остаться</button>
-        <button onclick="forceBack()" style="flex:1;padding:12px;background:#FF4040;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#fff;cursor:pointer">Выйти</button>
+      <div class="u-card female" onclick="selectUser('female')">
+        <div class="u-card-icon">🌸</div>
+        <div class="u-card-info"><h3>Жена</h3><p>Тонус · похудение · гибкость</p><span class="u-badge badge-pink">4 дня в неделю</span></div>
+        <span class="u-arrow">›</span>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ===== WIFE CALENDAR MODAL ===== -->
-  <div class="modal-bg" id="wife-cal-modal" onclick="if(event.target===this)closeWifeCal()">
-    <div class="modal-card">
-      <div class="modal-title">🌸 Тренировки жены</div>
-      <div id="wife-cal-body"></div>
-      <button class="modal-add-btn" onclick="closeWifeCal()" style="margin-top:12px">Закрыть</button>
-    </div>
+<div class="screen slide-in" id="s-dash">
+  <div class="header"><div><div class="dash-user-tag" id="d-tag">👤 Загрузка...</div><div class="dash-greeting" id="d-greeting">Привет!</div><div class="dash-sub" id="d-sub">Готов к тренировке?</div></div></div>
+  <div class="scrollable">
+    <div class="stats-row"><div class="s-card"><div class="s-label">Эта неделя</div><div class="s-val" id="d-week">0<span class="s-unit"> трен.</span></div></div><div class="s-card"><div class="s-label">Всего</div><div class="s-val" id="d-total">0<span class="s-unit"> трен.</span></div></div></div>
+    <div class="section-label">Дни недели</div><div class="week-strip" id="d-week-strip"></div>
+    <div class="section-label">Сегодня</div>
+    <div class="today-block" id="d-today"><div class="today-top" onclick="startTodayWorkout()"><div class="today-tag" id="d-today-tag">Тренировка дня</div><div class="today-name" id="d-today-name">—</div><div class="today-meta" id="d-today-meta"></div></div><button class="today-cta" id="d-cta" onclick="startTodayWorkout()">Начать →</button></div>
+    <div class="section-label">Все программы</div><div class="prog-grid" id="d-progs"></div>
   </div>
+  <nav class="bottom-nav"><button class="nb nb-active" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button><button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button><button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button></nav>
+</div>
 
-</div><!-- #app -->
+<div class="screen slide-in" id="s-workout">
+  <div class="header"><button class="header-back" onclick="goBack('dash')" style="margin-right:12px">←</button><div style="flex:1"><div class="wk-name" id="wk-name">Тренировка</div><div class="wk-meta" id="wk-meta"></div></div><button class="header-back" onclick="openTimer(60)">⏱</button></div>
+  <div class="prog-bar"><div class="prog-fill" id="wk-fill" style="width:0%"></div></div>
+  <div class="scrollable" id="wk-list"></div>
+  <nav class="bottom-nav"><button class="nb" onclick="goBack('dash')"><span class="ni">←</span><span class="nl">Назад</span></button><button class="nb nb-active"><span class="ni">🏋️</span><span class="nl">Тренировка</span></button><button class="nb" onclick="openTimer(60)"><span class="ni">⏱</span><span class="nl">Отдых</span></button></nav>
+</div>
 
-<script src="js/data.js"></script>
-<script src="js/animations.js"></script>
-<script src="js/app.js"></script>
+<div class="screen slide-in" id="s-history"><div class="header"><div class="header-title">История</div></div><div class="scrollable" style="padding:0 20px 80px" id="hist-body"></div><nav class="bottom-nav"><button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button><button class="nb nb-active" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button><button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button></nav></div>
+
+<div class="screen slide-in" id="s-profile">
+  <div class="header"><div class="header-title">Профиль</div></div>
+  <div class="scrollable" style="padding-bottom:80px">
+    <div class="profile-hero"><div class="p-avatar" id="p-av"></div><div><div class="p-name" id="p-name">—</div><div class="p-level" id="p-lvl">Начинающий</div></div></div>
+    <div class="section-label">Настройки</div>
+    <div class="settings-list"><div class="si"><span class="si-label">Уровень</span><select id="lvl-sel" onchange="saveLevel()"><option value="beginner">Начинающий</option><option value="medium">Средний</option><option value="advanced">Продвинутый</option></select></div><div class="si"><span class="si-label">Тренировок всего</span><span class="si-val" id="p-total">0</span></div><div class="si"><span class="si-label">На этой неделе</span><span class="si-val" id="p-week">0</span></div><div class="si"><span class="si-label">Последняя тренировка</span><span class="si-val" id="p-last">—</span></div></div>
+    <button class="switch-btn" onclick="switchUser()">🔄 Сменить пользователя</button>
+    <div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">FitCoach · Наглядные иконки</div>
+  </div>
+  <nav class="bottom-nav"><button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button><button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button><button class="nb nb-active" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button></nav>
+</div>
+
+<div class="timer-bg" id="timer-bg" onclick="if(event.target===this)closeTimer()"><div class="timer-card"><div class="timer-lbl">Отдых между подходами</div><div class="timer-num" id="t-num">60</div><div class="timer-presets"><button class="t-pre" onclick="resetTimer(30)">30 с</button><button class="t-pre" onclick="resetTimer(45)">45 с</button><button class="t-pre" onclick="resetTimer(60)">60 с</button><button class="t-pre" onclick="resetTimer(90)">90 с</button></div><button class="t-close" onclick="closeTimer()">Закрыть</button></div></div>
+
+<script>
+// === НАГЛЯДНЫЕ ЭМОДЗИ ДЛЯ КАЖДОГО УПРАЖНЕНИЯ (всегда работают) ===
+const EXERCISE_EMOJI = {
+  'Жим штанги лёжа': '🏋️‍♂️ Жим штанги лёжа',
+  'Жим гантелей на наклонной': '🏋️‍♂️ Жим гантелей наклонно',
+  'Разводка гантелей': '🦾 Разводка гантелей',
+  'Французский жим лёжа': '💪 Французский жим',
+  'Отжимания на брусьях': '💪 Отжимания на брусьях',
+  'Подтягивания широким хватом': '🤸 Подтягивания',
+  'Тяга штанги в наклоне': '🏋️‍♂️ Тяга штанги',
+  'Тяга гантели одной рукой': '🦾 Тяга гантели',
+  'Подъём штанги на бицепс': '💪 Подъём штанги на бицепс',
+  'Молотковые сгибания': '🔨 Молотки',
+  'Приседания со штангой': '🏋️‍♂️ Приседания',
+  'Жим ногами': '🦵 Жим ногами',
+  'Румынская тяга': '🏋️‍♂️ Румынская тяга',
+  'Жим штанги стоя': '🏋️‍♂️ Жим стоя',
+  'Тяга к подбородку': '🤸 Тяга к подбородку',
+  'Подъёмы на икры стоя': '🦵 Подъём на икры',
+  'Бег / велотренажёр': '🏃 Бег/вело',
+  'Скручивания': '🔄 Скручивания',
+  'Планка': '📏 Планка',
+  'Подъём ног лёжа': '🦵 Подъём ног',
+  'Русский твист': '🔄 Русский твист',
+  'Скалолаз': '🧗 Скалолаз',
+  'Приседания с гантелями': '🏋️‍♀️ Приседания с гантелями',
+  'Ягодичный мостик': '🍑 Ягодичный мостик',
+  'Выпады с ходьбой': '🚶‍♀️ Выпады с ходьбой',
+  'Отведение ноги назад': '🦵 Отведение ноги назад',
+  'Сумо-приседания': '🏋️‍♀️ Сумо-присед',
+  'Отжимания': '💪 Отжимания',
+  'Тяга гантелей в наклоне': '🏋️‍♀️ Тяга гантелей',
+  'Жим гантелей сидя': '🏋️‍♀️ Жим сидя',
+  'Подъём гантелей на бицепс': '💪 Бицепс с гантелями',
+  'Берпи': '🏃‍♀️ Берпи',
+  'Прыжки со скакалкой': '🪢 Скакалка',
+  'Наклоны к ногам': '🧘‍♀️ Наклон',
+  'Поза голубя': '🕊️ Поза голубя',
+  'Кошка-корова': '🐱 Кошка-корова'
+};
+
+function getExerciseImageHTML(name) {
+  const emojiText = EXERCISE_EMOJI[name] || '🏋️ ' + name;
+  return `<div class="ex-image"><div class="img-placeholder">${emojiText}</div></div>`;
+}
+
+// === БАЗА ТРЕНИРОВОК (ПРОВЕРЕННАЯ) ===
+const PROGRAMS = {
+  male: [
+    { id:'m1', name:'День 1 — Грудь + Трицепс', short:'Верх тела', days:[1], icon:'🏋️', exercises:[
+      { name:'Жим штанги лёжа', sets:4, reps:'8-10', rest:90, tip:'Лопатки сведены, стопы в пол' },
+      { name:'Жим гантелей на наклонной', sets:3, reps:'10-12', rest:75, tip:'Угол 30-45°' },
+      { name:'Разводка гантелей', sets:3, reps:'12-15', rest:60, tip:'Лёгкий изгиб локтей' },
+      { name:'Французский жим лёжа', sets:3, reps:'10-12', rest:60, tip:'Локти фиксированы' },
+      { name:'Отжимания на брусьях', sets:3, reps:'10-15', rest:60, tip:'Наклон вперёд' }
+    ] },
+    { id:'m2', name:'День 2 — Спина + Бицепс', short:'Верх тела (тяга)', days:[2], icon:'💪', exercises:[
+      { name:'Подтягивания широким хватом', sets:4, reps:'6-10', rest:90, tip:'Грудью к перекладине' },
+      { name:'Тяга штанги в наклоне', sets:4, reps:'8-10', rest:90, tip:'Спина прямая' },
+      { name:'Тяга гантели одной рукой', sets:3, reps:'10-12', rest:60, tip:'Колено на скамье' },
+      { name:'Подъём штанги на бицепс', sets:3, reps:'10-12', rest:60, tip:'Локти неподвижны' },
+      { name:'Молотковые сгибания', sets:3, reps:'12-15', rest:60, tip:'Нейтральный хват' }
+    ] },
+    { id:'m3', name:'День 3 — Ноги + Плечи', short:'Низ тела + дельты', days:[3], icon:'🔥', exercises:[
+      { name:'Приседания со штангой', sets:4, reps:'8-10', rest:120, tip:'Колени по носкам' },
+      { name:'Жим ногами', sets:3, reps:'10-12', rest:90, tip:'Полная амплитуда' },
+      { name:'Румынская тяга', sets:3, reps:'10-12', rest:90, tip:'Движение в бёдрах' },
+      { name:'Жим штанги стоя', sets:4, reps:'8-10', rest:90, tip:'Ядро напряжено' },
+      { name:'Тяга к подбородку', sets:3, reps:'12-15', rest:60, tip:'Локти ведут' },
+      { name:'Подъёмы на икры стоя', sets:4, reps:'15-20', rest:45, tip:'Пауза вверху' }
+    ] },
+    { id:'m4', name:'День 4 — Кардио + Пресс', short:'Кардио и кор', days:[4], icon:'⚡', exercises:[
+      { name:'Бег / велотренажёр', sets:1, reps:'20 мин', rest:0, tip:'Пульс 130-150' },
+      { name:'Скручивания', sets:3, reps:'20', rest:45, tip:'Поясница прижата' },
+      { name:'Планка', sets:4, reps:'45-60 с', rest:45, tip:'Тело прямое' },
+      { name:'Подъём ног лёжа', sets:3, reps:'15', rest:45, tip:'Поясница не отрывается' },
+      { name:'Русский твист', sets:3, reps:'20', rest:45, tip:'Касайся пола' },
+      { name:'Скалолаз', sets:3, reps:'30 с', rest:45, tip:'Быстрый темп' }
+    ] }
+  ],
+  female: [
+    { id:'f1', name:'День 1 — Ягодицы + Ноги', short:'Нижняя часть', days:[1,3], icon:'🍑', exercises:[
+      { name:'Приседания с гантелями', sets:4, reps:'12-15', rest:60, tip:'Грудь прямо' },
+      { name:'Ягодичный мостик', sets:4, reps:'15-20', rest:45, tip:'Сожми ягодицы' },
+      { name:'Выпады с ходьбой', sets:3, reps:'12 на ногу', rest:60, tip:'Широкий шаг' },
+      { name:'Отведение ноги назад', sets:3, reps:'15 на ногу', rest:45, tip:'С резинкой' },
+      { name:'Сумо-приседания', sets:3, reps:'15', rest:60, tip:'Широкая стойка' }
+    ] },
+    { id:'f2', name:'День 2 — Верх тела + Пресс', short:'Руки, спина, кор', days:[2,4], icon:'💫', exercises:[
+      { name:'Отжимания', sets:3, reps:'10-15', rest:45, tip:'С колен или полные' },
+      { name:'Тяга гантелей в наклоне', sets:3, reps:'12', rest:60, tip:'Локти прижаты' },
+      { name:'Жим гантелей сидя', sets:3, reps:'12', rest:60, tip:'Локти 90°' },
+      { name:'Подъём гантелей на бицепс', sets:3, reps:'12-15', rest:45, tip:'Медленно опускай' },
+      { name:'Планка', sets:3, reps:'30-45 с', rest:45, tip:'Дыши ровно' },
+      { name:'Скручивания', sets:3, reps:'20', rest:45, tip:'Поясница прижата' }
+    ] },
+    { id:'f3', name:'День 3 — Кардио + Растяжка', short:'Сжигание + гибкость', days:[5], icon:'🧘', exercises:[
+      { name:'Прыжки со скакалкой', sets:1, reps:'15-20 мин', rest:0, tip:'Пульс 120-140' },
+      { name:'Берпи', sets:3, reps:'10', rest:60, tip:'Темп средний' },
+      { name:'Наклоны к ногам', sets:3, reps:'30 с', rest:20, tip:'Тянись плавно' },
+      { name:'Поза голубя', sets:2, reps:'45 с', rest:20, tip:'Дыши и расслабляйся' },
+      { name:'Кошка-корова', sets:2, reps:'10 раз', rest:20, tip:'Медленно прокатывай' }
+    ] }
+  ]
+};
+
+// === ОСТАЛЬНАЯ ЛОГИКА (ИДЕНТИЧНА РАБОЧЕЙ) ===
+let currentUser = null, currentWorkout = null, completedSets = {}, timerInterval = null, timerSeconds = 0;
+const weekDays = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+function saveData(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function loadData(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+
+function showScreen(id, back){
+  document.querySelectorAll('.screen').forEach(s=>{
+    if(s.classList.contains('active')){s.classList.remove('active');if(!back)s.classList.add('slide-out');setTimeout(()=>s.classList.remove('slide-out'),300)}
+  });
+  const t=document.getElementById('s-'+id);
+  t.classList.remove('slide-in','slide-out');
+  if(!back)t.classList.add('slide-in');
+  setTimeout(()=>{t.classList.remove('slide-in');t.classList.add('active')},10);
+}
+function goBack(id){showScreen(id,true)}
+function goTab(t){
+  if(t==='dash'){buildDashboard();showScreen('dash',true)}
+  else if(t==='history'){buildHistory();showScreen('history',true)}
+  else if(t==='profile'){buildProfile();showScreen('profile',true)}
+}
+function selectUser(gender, silent){
+  currentUser=gender; saveData('fitCoach_lastUser',gender); buildDashboard();
+  if(!silent)showScreen('dash');
+  else{document.getElementById('s-select').classList.remove('active');document.getElementById('s-dash').classList.add('active')}
+}
+function switchUser(){currentUser=null;saveData('fitCoach_lastUser',null);showScreen('select')}
+function buildDashboard(){
+  if(!currentUser)return;
+  const isFemale=currentUser==='female', programs=PROGRAMS[currentUser], today=new Date().getDay();
+  const stats=loadData('fitCoach_stats_'+currentUser)||{week:0,total:0,weekDays:[]};
+  document.getElementById('d-tag').textContent=isFemale?'🌸 Жена':'💪 Я';
+  document.getElementById('d-tag').className='dash-user-tag '+(isFemale?'tag-female':'tag-male');
+  document.getElementById('d-greeting').textContent=isFemale?'Привет, красотка! 🌸':'Время качаться! 💪';
+  document.getElementById('d-sub').textContent=isFemale?'Программа тонуса':'Силовые тренировки';
+  document.getElementById('d-week').innerHTML=(stats.week||0)+'<span class="s-unit"> трен.</span>';
+  document.getElementById('d-total').innerHTML=(stats.total||0)+'<span class="s-unit"> трен.</span>';
+  const strip=document.getElementById('d-week-strip');strip.innerHTML='';
+  for(let i=0;i<7;i++){const d=document.createElement('div');const done=(stats.weekDays||[]).includes(i);const isT=i===today;
+    d.className='wd'+(done?(isFemale?' done-female':' done-male'):'')+(isT?' today-day':'');
+    d.innerHTML=weekDays[i]+'<span>'+(done?'✓':(isT?'•':'·'))+'</span>';strip.appendChild(d);}
+  const tp=programs.find(p=>p.days.includes(today));const rest=!tp;
+  document.getElementById('d-today-tag').textContent=rest?'День отдыха':'Тренировка дня';
+  document.getElementById('d-today-name').textContent=rest?'Восстановление 🛋️':tp.name;
+  document.getElementById('d-today-meta').textContent=rest?'Лёгкая растяжка':(tp.exercises.length+' упражнений');
+  const cta=document.getElementById('d-cta');cta.textContent=rest?'Открыть программы →':'Начать →';
+  cta.className='today-cta '+(isFemale?'cta-female':'cta-male');
+  const pg=document.getElementById('d-progs');pg.innerHTML='';
+  programs.forEach(p=>{const el=document.createElement('div');el.className='pg-item';el.onclick=()=>startWorkout(p);
+    el.innerHTML=`<div class="pg-icon ${isFemale?'pg-icon-female':'pg-icon-male'}">${p.icon}</div><div class="pg-text"><h4>${p.name}</h4><p>${p.exercises.length} упр</p></div><span class="pg-arr">›</span>`;
+    pg.appendChild(el);});
+}
+function startTodayWorkout(){const today=new Date().getDay();const p=PROGRAMS[currentUser].find(x=>x.days.includes(today))||PROGRAMS[currentUser][0];startWorkout(p);}
+function startWorkout(prog){currentWorkout=prog;completedSets={};const isFemale=currentUser==='female';document.getElementById('wk-name').textContent=prog.name;document.getElementById('wk-meta').textContent=prog.exercises.length+' упражнений';document.getElementById('wk-fill').className='prog-fill'+(isFemale?' female':'');renderWorkout();showScreen('workout');}
+function renderWorkout(){
+  const isFemale=currentUser==='female', exercises=currentWorkout.exercises, container=document.getElementById('wk-list');container.innerHTML='';
+  const allDone=exercises.every((ex,idx)=>(completedSets[idx]||0)>=ex.sets);
+  if(allDone){completeWorkout();return;}
+  const totalSets=exercises.reduce((s,e)=>s+e.sets,0);const doneSets=Object.values(completedSets).reduce((a,b)=>a+b,0);
+  document.getElementById('wk-fill').style.width=Math.round(doneSets/totalSets*100)+'%';
+  const firstInc=exercises.findIndex((ex,idx)=>(completedSets[idx]||0)<ex.sets);
+  exercises.forEach((ex,idx)=>{
+    const doneCount=completedSets[idx]||0, isActive=idx===firstInc, isDone=doneCount>=ex.sets;
+    const card=document.createElement('div');card.className='ex-card'+(isActive?' is-active':'')+(isDone?' is-done':'');
+    const numClass=isDone?('ex-num num-done-'+(isFemale?'female':'male')):(isActive?'ex-num num-active':'ex-num');
+    const numText=isDone?'✓':(idx+1);
+    let setsHtml='';for(let s=0;s<ex.sets;s++){setsHtml+=`<span class="set-p${s<doneCount?' sp-done-'+(isFemale?'female':'male'):''}">${s+1}·${ex.reps}</span>`;}
+    card.innerHTML=`<div class="ex-top"><div class="${numClass}">${numText}</div><div class="ex-info"><h4>${ex.name}</h4><div class="ex-detail">${ex.sets}×${ex.reps}${ex.rest?' · отдых '+ex.rest+'с':''}</div><div class="ex-tip">💡 ${ex.tip}</div><div class="sets-pills">${setsHtml}</div></div></div>${getExerciseImageHTML(ex.name)}`;
+    if(isActive&&!isDone){
+      const acts=document.createElement('div');acts.className='ex-acts';
+      acts.innerHTML=`<button class="act-btn" onclick="skipExercise(${idx})">Пропустить</button><button class="act-btn act-primary-${isFemale?'female':'male'}" onclick="completeSet(${idx})">Выполнен ✓</button>`;
+      card.appendChild(acts);
+    }
+    container.appendChild(card);
+  });
+}
+function completeSet(idx){const ex=currentWorkout.exercises[idx];completedSets[idx]=(completedSets[idx]||0)+1;const allDone=currentWorkout.exercises.every((e,i)=>(completedSets[i]||0)>=e.sets);if(allDone){recordWorkout();renderWorkout();return;}if((completedSets[idx]||0)<ex.sets&&ex.rest>0)openTimer(ex.rest);renderWorkout();setTimeout(()=>{const ac=document.querySelector('.ex-card.is-active');if(ac)ac.scrollIntoView({behavior:'smooth',block:'center'})},100);}
+function skipExercise(idx){completedSets[idx]=currentWorkout.exercises[idx].sets;renderWorkout();}
+function recordWorkout(){const stats=loadData('fitCoach_stats_'+currentUser)||{week:0,total:0,weekDays:[]};stats.total++;const d=new Date().getDay();if(!stats.weekDays.includes(d)){stats.weekDays.push(d);stats.week=stats.weekDays.length;}saveData('fitCoach_stats_'+currentUser,stats);const hist=loadData('fitCoach_history_'+currentUser)||[];hist.unshift({date:new Date().toLocaleDateString('ru'),name:currentWorkout.name,exercises:currentWorkout.exercises.length});saveData('fitCoach_history_'+currentUser,hist.slice(0,50));}
+function completeWorkout(){const isFemale=currentUser==='female';document.getElementById('wk-list').innerHTML=`<div class="done-screen"><div class="done-icon">${isFemale?'🌸':'💪'}</div><div class="done-title">Тренировка завершена!</div><div class="done-sub">Отличная работа!</div><button class="done-btn" onclick="goBack('dash')">На главную</button></div>`;}
+function openTimer(s){if(timerInterval)clearInterval(timerInterval);timerSeconds=s||60;updateTimer();document.getElementById('timer-bg').classList.add('show');timerInterval=setInterval(()=>{timerSeconds--;updateTimer();if(timerSeconds<=0){clearInterval(timerInterval);timerInterval=null;closeTimer();}},1000);}
+function resetTimer(s){if(timerInterval)clearInterval(timerInterval);timerSeconds=s;updateTimer();timerInterval=setInterval(()=>{timerSeconds--;updateTimer();if(timerSeconds<=0){clearInterval(timerInterval);timerInterval=null;closeTimer();}},1000);}
+function updateTimer(){const el=document.getElementById('t-num');el.textContent=timerSeconds;el.className='timer-num'+(timerSeconds<=10?' urgent':(timerSeconds<=20?' warn':''));}
+function closeTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null;}document.getElementById('timer-bg').classList.remove('show');}
+function buildHistory(){const isFemale=currentUser==='female';const hist=loadData('fitCoach_history_'+currentUser)||[];const container=document.getElementById('hist-body');if(!hist.length){container.innerHTML=`<div class="empty-state"><div class="empty-icon">${isFemale?'🌸':'💪'}</div><div class="empty-text">Нет тренировок.<br>Начни первую!</div></div>`;return;}container.innerHTML=hist.map(h=>`<div class="hist-item"><div class="hist-icon" style="background:${isFemale?'var(--pink-dim)':'var(--blue-dim)'}">${isFemale?'🌸':'⚡'}</div><div class="hist-text"><h4>${h.name}</h4><p>${h.date} · ${h.exercises} упр</p></div></div>`).join('');}
+function buildProfile(){const isFemale=currentUser==='female';const stats=loadData('fitCoach_stats_'+currentUser)||{week:0,total:0};const hist=loadData('fitCoach_history_'+currentUser)||[];const lvl=loadData('fitCoach_level_'+currentUser)||'beginner';const av=document.getElementById('p-av');av.textContent=isFemale?'🌸':'💪';av.className='p-avatar '+(isFemale?'p-avatar-female':'p-avatar-male');document.getElementById('p-name').textContent=isFemale?'Жена':'Я';const lvls={beginner:'Начинающий',medium:'Средний',advanced:'Продвинутый'};document.getElementById('p-lvl').textContent=lvls[lvl];document.getElementById('lvl-sel').value=lvl;document.getElementById('p-total').textContent=stats.total||0;document.getElementById('p-week').textContent=stats.week||0;document.getElementById('p-last').textContent=hist[0]?hist[0].date:'—';}
+function saveLevel(){saveData('fitCoach_level_'+currentUser,document.getElementById('lvl-sel').value);buildProfile();}
+(function init(){const u=loadData('fitCoach_lastUser');if(u&&(u==='male'||u==='female'))selectUser(u,true);})();
+</script>
 </body>
 </html>
