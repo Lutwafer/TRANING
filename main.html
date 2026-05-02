@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FitCoach Pro">
+<meta name="theme-color" content="#080808">
+<title>FitCoach Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== SELECT USER ===== -->
+  <div class="screen active" id="s-select">
+    <canvas id="bg-canvas"></canvas>
+    <div class="select-inner">
+      <div class="logo-area">
+        <div class="logo-mark">FC</div>
+        <div class="logo-title">FIT<span>COACH</span></div>
+        <div class="logo-sub">Профессиональные тренировки</div>
+        <div class="logo-version">Pro Edition</div>
+      </div>
+      <div class="select-label">— Выбери профиль —</div>
+      <div class="u-cards">
+        <div class="u-card male" onclick="selectUser('male')">
+          <div class="u-avatar-wrap">
+            <svg class="u-avatar-svg" viewBox="0 0 60 60"><circle cx="30" cy="20" r="12" fill="#00D4FF" opacity="0.8"/><path d="M10 55 Q15 35 30 33 Q45 35 50 55" fill="#00D4FF" opacity="0.6"/><line x1="18" y1="38" x2="8" y2="50" stroke="#00D4FF" stroke-width="5" stroke-linecap="round"/><line x1="42" y1="38" x2="52" y2="50" stroke="#00D4FF" stroke-width="5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="u-info">
+            <h3>Я (Мужской)</h3>
+            <p>Сила · Масса · Кардио</p>
+            <div class="u-chips"><span class="chip chip-m">5 дней/нед</span><span class="chip chip-m">Силовые</span></div>
+          </div>
+          <div class="u-arr">›</div>
+        </div>
+        <div class="u-card female" onclick="selectUser('female')">
+          <div class="u-avatar-wrap">
+            <svg class="u-avatar-svg" viewBox="0 0 60 60"><ellipse cx="30" cy="18" rx="11" ry="13" fill="#FF6B9D" opacity="0.8"/><path d="M12 55 Q18 33 30 31 Q42 33 48 55" fill="#FF6B9D" opacity="0.6"/><line x1="20" y1="37" x2="10" y2="46" stroke="#FF6B9D" stroke-width="4" stroke-linecap="round"/><line x1="40" y1="37" x2="50" y2="46" stroke="#FF6B9D" stroke-width="4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="u-info">
+            <h3>Жена (Женский)</h3>
+            <p>Тонус · Похудение · Гибкость</p>
+            <div class="u-chips"><span class="chip chip-f">4 дня/нед</span><span class="chip chip-f">Фитнес</span></div>
+          </div>
+          <div class="u-arr">›</div>
+        </div>
+      </div>
+      <div class="select-footer">Данные сохраняются отдельно для каждого профиля</div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="screen slide-in" id="s-dash">
+    <div class="dash-head" id="dash-head">
+      <div class="dash-tag" id="d-tag"></div>
+      <div class="dash-greeting" id="d-greeting"></div>
+      <div class="dash-sub" id="d-sub"></div>
+      <!-- Виджет слежения за женой (только для мужского профиля) -->
+      <div class="wife-widget" id="wife-widget" style="display:none">
+        <div class="ww-title">🌸 Тренировки жены</div>
+        <div class="ww-body" id="ww-body"></div>
+      </div>
+    </div>
+    <div class="scrollable">
+      <div class="stats-row">
+        <div class="s-card"><div class="s-lbl">Эта неделя</div><div class="s-val" id="d-week">0<span class="s-unit"> трен</span></div></div>
+        <div class="s-card"><div class="s-lbl">Всего</div><div class="s-val" id="d-total">0<span class="s-unit"> трен</span></div></div>
+        <div class="s-card"><div class="s-lbl">Калорий сожжено</div><div class="s-val" id="d-kcal">0<span class="s-unit"> ккал</span></div></div>
+      </div>
+      <div class="sec-lbl">Неделя</div>
+      <div class="week-strip" id="d-wstrip"></div>
+      <div class="sec-lbl">Сегодня</div>
+      <div class="today-block" id="d-today">
+        <div class="today-top" onclick="startTodayWorkout()">
+          <div class="today-tag" id="d-today-tag">Тренировка дня</div>
+          <div class="today-name" id="d-today-name">—</div>
+          <div class="today-meta" id="d-today-meta"></div>
+        </div>
+        <button class="today-cta" id="d-cta" onclick="startTodayWorkout()">НАЧАТЬ →</button>
+      </div>
+      <div class="sec-lbl">Все программы</div>
+      <div class="prog-grid" id="d-progs"></div>
+    </div>
+    <nav class="bottom-nav" id="dash-nav">
+      <button class="nb nb-active" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
+      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
+      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
+      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== WORKOUT ===== -->
+  <div class="screen slide-in" id="s-workout">
+    <div class="wk-header">
+      <button class="icon-btn" onclick="confirmBack()">←</button>
+      <div class="wk-head-info">
+        <div class="wk-title" id="wk-name">Тренировка</div>
+        <div class="wk-meta-txt" id="wk-meta"></div>
+      </div>
+      <button class="icon-btn" onclick="openTimer(60)">⏱</button>
+    </div>
+    <div class="prog-bar-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="wk-fill" style="width:0%"></div></div>
+      <div class="prog-txt" id="wk-prog-txt">0 / 0</div>
+    </div>
+    <div class="scrollable" id="wk-list"></div>
+    <nav class="bottom-nav">
+      <button class="nb" onclick="confirmBack()"><span class="ni">✕</span><span class="nl">Выйти</span></button>
+      <button class="nb nb-active"><span class="ni">🏋️</span><span class="nl">Тренировка</span></button>
+      <button class="nb" onclick="openTimer(60)"><span class="ni">⏱</span><span class="nl">Таймер</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== CALORIES ===== -->
+  <div class="screen slide-in" id="s-calories">
+    <div class="header">
+      <div class="header-title">🥗 Калории</div>
+      <div class="cal-date-nav">
+        <button class="icon-btn-sm" onclick="changeCalDate(-1)">‹</button>
+        <span id="cal-date-lbl" style="font-size:13px;color:var(--text2)"></span>
+        <button class="icon-btn-sm" onclick="changeCalDate(1)">›</button>
+      </div>
+    </div>
+    <div class="scrollable">
+      <!-- Итог дня -->
+      <div class="cal-summary" id="cal-summary">
+        <div class="cal-ring-wrap">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"
+              id="cal-ring" style="transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset 0.5s"/>
+          </svg>
+          <div class="cal-ring-text">
+            <div class="cal-ring-val" id="cal-total-val">0</div>
+            <div class="cal-ring-lbl">ккал</div>
+          </div>
+        </div>
+        <div class="cal-macros">
+          <div class="cal-macro"><div class="cm-val" id="mac-p">0г</div><div class="cm-lbl">Белки</div></div>
+          <div class="cal-macro"><div class="cm-val" id="mac-c">0г</div><div class="cm-lbl">Углев</div></div>
+          <div class="cal-macro"><div class="cm-val" id="mac-f">0г</div><div class="cm-lbl">Жиры</div></div>
+          <div class="cal-macro"><div class="cm-val" id="mac-w">0мл</div><div class="cm-lbl">Вода</div></div>
+        </div>
+      </div>
+      <!-- Цель калорий -->
+      <div class="cal-goal-bar" id="cal-goal-bar"></div>
+      <!-- Поиск еды -->
+      <div class="cal-search-wrap">
+        <div class="cal-search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="food-search" placeholder="Поиск еды, напитков..." oninput="searchFood(this.value)" autocomplete="off">
+          <button id="scan-btn" onclick="toggleBarcodeMode()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px">📷</button>
+        </div>
+        <div class="food-results" id="food-results"></div>
+      </div>
+      <!-- Категории быстрого добавления -->
+      <div class="sec-lbl">Быстрое добавление</div>
+      <div class="quick-cats" id="quick-cats"></div>
+      <!-- Список за день -->
+      <div class="sec-lbl" id="food-log-lbl">Сегодня съедено</div>
+      <div class="food-log" id="food-log"></div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
+      <button class="nb nb-active" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
+      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
+      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div class="screen slide-in" id="s-history">
+    <div class="header"><div class="header-title">📊 История</div></div>
+    <div class="scrollable" style="padding:0 20px 90px" id="hist-body"></div>
+    <nav class="bottom-nav">
+      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
+      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
+      <button class="nb nb-active" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
+      <button class="nb" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== PROFILE ===== -->
+  <div class="screen slide-in" id="s-profile">
+    <div class="header"><div class="header-title">👤 Профиль</div></div>
+    <div class="scrollable" style="padding-bottom:90px">
+      <div class="profile-hero">
+        <div class="p-av" id="p-av"></div>
+        <div class="p-info">
+          <div class="p-name" id="p-name">—</div>
+          <div class="p-lvl" id="p-lvl">Начинающий</div>
+          <div class="p-streak" id="p-streak"></div>
+        </div>
+      </div>
+      <!-- Параметры тела -->
+      <div class="sec-lbl">Параметры тела</div>
+      <div class="body-params" id="body-params"></div>
+      <!-- Настройки -->
+      <div class="sec-lbl">Настройки</div>
+      <div class="settings-list">
+        <div class="si"><span class="si-lbl">Уровень подготовки</span><select id="lvl-sel" onchange="saveLevel()"><option value="beginner">Начинающий</option><option value="medium">Средний</option><option value="advanced">Продвинутый</option></select></div>
+        <div class="si"><span class="si-lbl">Цель калорий/день</span><input type="number" id="cal-goal-input" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text);width:90px" placeholder="2000" onchange="saveCalGoal()"></div>
+        <div class="si"><span class="si-lbl">Тренировок всего</span><span class="si-val" id="p-total">0</span></div>
+        <div class="si"><span class="si-lbl">На этой неделе</span><span class="si-val" id="p-week">0</span></div>
+        <div class="si"><span class="si-lbl">Последняя тренировка</span><span class="si-val" id="p-last">—</span></div>
+      </div>
+      <button class="switch-btn" onclick="switchUser()">🔄 Сменить профиль</button>
+      <div class="app-footer">FitCoach Pro · v2.0 · Данные хранятся локально</div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nb" onclick="goTab('dash')"><span class="ni">🏠</span><span class="nl">Главная</span></button>
+      <button class="nb" onclick="goTab('calories')"><span class="ni">🥗</span><span class="nl">Калории</span></button>
+      <button class="nb" onclick="goTab('history')"><span class="ni">📊</span><span class="nl">История</span></button>
+      <button class="nb nb-active" onclick="goTab('profile')"><span class="ni">👤</span><span class="nl">Профиль</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== TIMER OVERLAY ===== -->
+  <div class="timer-bg" id="timer-bg" onclick="if(event.target===this)closeTimer()">
+    <div class="timer-card">
+      <div class="timer-lbl">ОТДЫХ МЕЖДУ ПОДХОДАМИ</div>
+      <div class="timer-ring-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="68" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+          <circle cx="80" cy="80" r="68" fill="none" stroke="var(--accent)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="0"
+            id="t-ring" style="transform:rotate(-90deg);transform-origin:80px 80px;transition:stroke-dashoffset 1s linear"/>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-num" id="t-num">60</div>
+          <div class="timer-sec-lbl">сек</div>
+        </div>
+      </div>
+      <div class="timer-presets">
+        <button class="t-pre" onclick="resetTimer(30)">30с</button>
+        <button class="t-pre" onclick="resetTimer(45)">45с</button>
+        <button class="t-pre" onclick="resetTimer(60)">60с</button>
+        <button class="t-pre" onclick="resetTimer(90)">90с</button>
+        <button class="t-pre" onclick="resetTimer(120)">2мин</button>
+      </div>
+      <button class="t-close" onclick="closeTimer()">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- ===== ADD FOOD MODAL ===== -->
+  <div class="modal-bg" id="food-modal" onclick="if(event.target===this)closeFoodModal()">
+    <div class="modal-card">
+      <div class="modal-title" id="fm-title">Добавить</div>
+      <div class="modal-food-info" id="fm-info"></div>
+      <div class="modal-field">
+        <label>Количество (г / мл / шт)</label>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeQty(-10)">−</button>
+          <input type="number" id="fm-qty" value="100" min="1" max="2000" oninput="updateFoodCalc()">
+          <button class="qty-btn" onclick="changeQty(10)">+</button>
+        </div>
+      </div>
+      <div class="modal-calc" id="fm-calc"></div>
+      <div class="modal-meal-type">
+        <div class="meal-type-lbl">Приём пищи:</div>
+        <div class="meal-types">
+          <button class="mt-btn active" onclick="setMealType(this,'breakfast')">🌅 Завтрак</button>
+          <button class="mt-btn" onclick="setMealType(this,'lunch')">☀️ Обед</button>
+          <button class="mt-btn" onclick="setMealType(this,'dinner')">🌙 Ужин</button>
+          <button class="mt-btn" onclick="setMealType(this,'snack')">🍎 Перекус</button>
+        </div>
+      </div>
+      <button class="modal-add-btn" onclick="addFoodToLog()">Добавить ✓</button>
+    </div>
+  </div>
+
+  <!-- ===== WEIGHT MODAL ===== -->
+  <div class="modal-bg" id="weight-modal" onclick="if(event.target===this)closeWeightModal()">
+    <div class="modal-card">
+      <div class="modal-title" id="wm-title">Вес упражнения</div>
+      <div class="modal-field">
+        <label id="wm-ex-name" style="font-size:13px;color:var(--text2);margin-bottom:8px;display:block"></label>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeWeight(-2.5)">−</button>
+          <input type="number" id="wm-weight" value="0" step="2.5" min="0" max="300">
+          <button class="qty-btn" onclick="changeWeight(2.5)">+</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:6px">кг (0 = вес тела)</div>
+      </div>
+      <div class="modal-note">
+        <input type="text" id="wm-note" placeholder="Заметка (опционально)" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text)">
+      </div>
+      <button class="modal-add-btn" onclick="saveWeight()">Сохранить</button>
+    </div>
+  </div>
+
+  <!-- ===== CONFIRM BACK ===== -->
+  <div class="modal-bg" id="confirm-modal" onclick="if(event.target===this)closeConfirm()">
+    <div class="modal-card" style="text-align:center">
+      <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+      <div class="modal-title">Выйти из тренировки?</div>
+      <div style="font-size:14px;color:var(--text2);margin:10px 0 20px">Прогресс будет потерян</div>
+      <div style="display:flex;gap:10px">
+        <button onclick="closeConfirm()" style="flex:1;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text2);cursor:pointer">Остаться</button>
+        <button onclick="forceBack()" style="flex:1;padding:12px;background:#FF4040;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#fff;cursor:pointer">Выйти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WIFE CALENDAR MODAL ===== -->
+  <div class="modal-bg" id="wife-cal-modal" onclick="if(event.target===this)closeWifeCal()">
+    <div class="modal-card">
+      <div class="modal-title">🌸 Тренировки жены</div>
+      <div id="wife-cal-body"></div>
+      <button class="modal-add-btn" onclick="closeWifeCal()" style="margin-top:12px">Закрыть</button>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script src="js/data.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
